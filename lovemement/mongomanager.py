@@ -97,6 +97,16 @@ def find_by_id(_id=None):
             print(e)
             return None
 
+def remove_by_id(_id=None):
+    if _id is not None:
+        try:
+            db = get_connection()
+            db[constants.mongo_table_moments].remove({'_id':ObjectId(_id)})
+            return True
+        except Exception as e:
+            print(e)
+            return False
+    return False
 
 if __name__=='__main__':
     insert_moment()

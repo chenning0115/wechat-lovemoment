@@ -14,7 +14,7 @@ import sys
 sys.path.append('..')
 import constants
 import momenthandlers
-
+import sys
 import logging
 import logging.config
 
@@ -31,10 +31,19 @@ def main():
         (r"/getmoments",momenthandlers.Handler_getmoments),
         (r"/detail",momenthandlers.Handler_detail),
         (r"/uploadimg", momenthandlers.Handler_uploaddata),
+        (r"/delete",momenthandlers.Handler_delete),
     ])
-    http_server = tornado.httpserver.HTTPServer(application)
+    https = sys.argv[1]
+    if https == 'https':
+        http_server = tornado.httpserver.HTTPServer(application,
+                                                ssl_options={
+                                                    "certfile": "./certfile/ca.csr",
+                                                    "keyfile": "./certfile/ca.key"
+                                                })
+    else:
+        http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(constants.PORT)
-    logger.info('server start..')
+    logger.info('server start.. by %s' % https)
     tornado.ioloop.IOLoop.current().start()
 
 

@@ -18,6 +18,7 @@ import json
 import logging
 from datetime import datetime
 import lovemement.mongomanager as mongomanager
+from urllib import parse
 
 logger = logging.getLogger(constants.LOGGING_NAME)
 
@@ -81,10 +82,10 @@ class Handler_uploaddata(RequestHandler):
     def post(self):
         try:
             mdate_str = self.get_argument('mdate')+':00'
-            content = self.get_argument('content')
-            title = self.get_argument('title')
-            description = self.get_argument('description')
-            author = self.get_argument('author')
+            content = parse.unquote(self.get_argument('content'))
+            title = parse.unquote(self.get_argument('title'))
+            description = parse.unquote(self.get_argument('description'))
+            author = parse.unquote(self.get_argument('author'))
             picurls = []
             for field_name, files in self.request.files.items():
                 for info in files:
@@ -112,3 +113,13 @@ class Handler_uploaddata(RequestHandler):
             self.write('false')
             print(e)
 
+class Handler_delete(RequestHandler):
+    def get(self):
+        _id = self.get_argument(constants.url_param_detail_id)
+        logger.info(_id)
+        check = mongomanager.remove_by_id(_id)
+        if check:
+            self.write('true')
+        else:
+            self.write('false')
+        self.flush()
